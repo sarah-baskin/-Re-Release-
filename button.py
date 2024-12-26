@@ -12,24 +12,26 @@ from tkinter import messagebox
 window = tk.Tk()
 window.title("[Re]Release")
 window.geometry("500x440")
-# window.configure(bg='#333333')
-# frame = tk.Frame(bg='#333333')
+window.configure()
+
+title = tk.Label(window, text="[Re]Release", font=("Arial", 30))
+title.grid(row=0, column=0, columnspan=2, sticky="news", pady=40)
 
 
 genre_label = tk.Label(window, text="Genre")
-genre_label.grid(row=0, column=0)
+genre_label.grid(row=1, column=0)
 
 era_label = tk.Label(window, text="Era")
-era_label.grid(row=1, column=0)
+era_label.grid(row=2, column=0)
 
 rating_label = tk.Label(window, text="Rating")
-rating_label.grid(row=2, column=0)
+rating_label.grid(row=3, column=0)
 
 runtime_label = tk.Label(window, text="Runtime")
-runtime_label.grid(row=3, column=0)
+runtime_label.grid(row=4, column=0)
 
 lang_label = tk.Label(window, text="Language")
-lang_label.grid(row=4, column=0)
+lang_label.grid(row=5, column=0)
 
 
 genre_choices = ["Any", "Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary", 
@@ -40,17 +42,19 @@ genre = tk.StringVar()
 genre.set(genre_choices[0])
 
 
-genres = tk.OptionMenu(window, genre, *genre_choices)
-genres.grid(row=0, column=1)
+genres = tk.OptionMenu(window, genre, *genre_choices, )
+genres.config(width=20)
+genres.grid(row=1, column=1)
 
-era_choices = ["Any", "Silent Age (1911-1927)", "Pre-Code Era (1927-1933)", "Golden Age (1933-1948)", 
-        "Fall of the Studio System (1948-1965)", "New Hollywood (1965-1983)", "Blockbuster Age (1983-present)"]
+era_choices = ["Any", "Silent Age (1911-1927)", "Pre-Code Era (1927-1933)", "Golden Age (1933-1965)", 
+        "New Hollywood (1965-1983)", "Blockbuster Age (1983-present)"]
 
 era = tk.StringVar()
 era.set(era_choices[0])
 
 eras = tk.OptionMenu(window, era, *era_choices)
-eras.grid(row=1, column=1)
+eras.config(width=20)
+eras.grid(row=2, column=1)
 
 
 
@@ -60,7 +64,8 @@ rating = tk.StringVar()
 rating.set(rating_choices[0])
 
 ratings = tk.OptionMenu(window, rating, *rating_choices)
-ratings.grid(row=2, column=1)
+ratings.config(width=20)
+ratings.grid(row=3, column=1)
 
 
 
@@ -70,7 +75,8 @@ runtime = tk.StringVar()
 runtime.set(runtime_choices[0])
 
 runtimes = tk.OptionMenu(window, runtime, *runtime_choices)
-runtimes.grid(row=3, column=1)
+runtimes.config(width=20)
+runtimes.grid(row=4, column=1)
 
 
 
@@ -83,10 +89,11 @@ lang = tk.StringVar()
 lang.set(lang_choices[0])
 
 langs = tk.OptionMenu(window, lang, *lang_choices)
-langs.grid(row=4, column=1)
+langs.config(width=20)
+langs.grid(row=5, column=1)
 
 find = tk.Button(text="Find Movies!")
-find.grid(row=5, column=0, columnspan=2)
+find.grid(row=6, column=0, columnspan=2)
 
 # frame.pack()
 window.mainloop()
