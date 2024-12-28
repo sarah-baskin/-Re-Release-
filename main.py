@@ -5,11 +5,13 @@ from datetime import datetime
 from pytz import timezone
 import textwrap
 
-df = pd.read_csv("hf://datasets/bloc4488/TMDB-all-movies/TMDB_10k_movies.csv")
 
-df.drop(['id', 'revenue', 'budget', 'imdb_id', 'tagline', 'production_companies', 'director_of_photography', 'music_composer'], axis=1, inplace=True)
 
-df.rename(columns={'Unnamed: 0': 'id'}, inplace=True)
+lang_choices = ["Any", "Bahasa melayu", "বাংলা", "广州话 / 廣州話", "Český", "Dansk", "Nederlands",  "English", 
+                "Finnish", "Français", "Deutsch", "עִבְרִית", "हिन्दी", "Italiano", 
+                "日本語", "한국어/조선말", "普通话", "Norsk", "Polski", "Português", "Pусский", 
+                     "Español", "svenska", "ภาษาไทย", "Türkçe", ]
+
 
 window = tk.Tk()
 window.title("[Re]Release")
@@ -18,32 +20,89 @@ window.configure()
 
 def find_movies():
 
+    
+
+    df = pd.read_csv("hf://datasets/bloc4488/TMDB-all-movies/TMDB_10k_movies.csv")
+
+    df.drop(['id', 'revenue', 'budget', 'imdb_id', 'tagline', 'production_companies', 'director_of_photography', 'music_composer'], axis=1, inplace=True)
+
+    df.rename(columns={'Unnamed: 0': 'id'}, inplace=True)
+
+    df = df.dropna(subset=['overview'])
+
+    df['years'] = df['release_date'].str[0:4]
+    df['years'] = pd.to_numeric(df['years'], errors='coerce')
+
+
+    df['silent'] = df['years'].apply(lambda x: x <= 1926 if pd.notnull(x) else False)
+    df['pre_code'] = df['years'].apply(lambda x: 1927 <= x <= 1933 if pd.notnull(x) else False)
+    df['golden_age'] = df['years'].apply(lambda x: 1934 <= x <= 1965 if pd.notnull(x) else False)
+    df['new_hollywood'] = df['years'].apply(lambda x: 1966 <= x <= 1983 if pd.notnull(x) else False)
+    df['blockbuster'] = df['years'].apply(lambda x: 1984 <= x <= 2024 if pd.notnull(x) else False)
+
+
+    df['Acclaim (8.0 - 10.0)'] = df['vote_average'].apply(lambda x: 8.0 <= x <= 10.0 if pd.notnull(x) else False)
+    df['Positive (6.0-8.0)'] = df['vote_average'].apply(lambda x: 6.0 <= x < 8.0 if pd.notnull(x) else False)
+    df['Mixed (4.0-6.0)'] = df['vote_average'].apply(lambda x: 4.0 <= x < 6.0 if pd.notnull(x) else False)
+    df['Negative (2.0-4.0)'] = df['vote_average'].apply(lambda x: 2.0 <= x < 4.0 if pd.notnull(x) else False)
+    df['Terrible (0.0-2.0)'] = df['vote_average'].apply(lambda x: 0.0 <= x < 2.0 if pd.notnull(x) else False)
+
+    df['Short Film'] = df['runtime'].apply(lambda x: 0.00 < x/60 <= 0.5 if pd.notnull(x) else False)
+    df['An Hour and a Half'] = df['runtime'].apply(lambda x: 1.0 < x/60 <= 1.45 if pd.notnull(x) else False)
+    df['Two Hours (ish)'] = df['runtime'].apply(lambda x: 1.45 < x/60 <= 2.45 if pd.notnull(x) else False)
+    df['Three Hours (ish) and Beyond'] = df['runtime'].apply(lambda x: 2.45 < x/60 if pd.notnull(x) else False)
+
+
     tz = timezone('EST')
     today = datetime.now(tz)
 
     matching = str(today)[4:10]
 
-    if genre.get() == "Any" and era.get() == "Any" and rating.get() == "Any" and runtime.get() == "Any" and lang.get() == "Any":
-        matching = str(today)[4:10]
+    era_assignment = {"Silent Age (1911-1926)" : "silent", "Pre-Code Era (1927-1933)" : "pre_code", "Golden Age (1934-1965)"  : "golden_age", 
+        "New Hollywood (1966-1983)" : "new_hollywood", "Blockbuster Age (1984-present)" : "blockbuster"}
 
-        filtered_df = df[df['release_date'].str[4:] == matching]
 
-        suggestion = filtered_df.sample()
+    df = df[df['release_date'].str[4:] == matching]
 
-        print("* " * 40)
-        print("* Title: " + suggestion['title'].iloc[0] + " " * (80 - len(suggestion['title'].iloc[0]) - len("* Title: ") - 2) + "*")
-        print("* Genre(s): " + suggestion['genres'].iloc[0] + " " * (80 - len(suggestion['genres'].iloc[0]) - len("* Genre(s): ") - 2) + "*")
-        print("* Language: " + suggestion['spoken_languages'].iloc[0] + " " * (80 - len(suggestion['spoken_languages'].iloc[0]) - len("* Language: ") - 2) + "*")
-        print("* Summary: ", end="")
+    if genre.get() != "Any":
+        df['contains_genre'] = df['genres'].str.contains(genre.get(), case=False, na=False)
+        df = df[df['contains_genre'] == True]
+    
+    elif era.get() != "Any":
+        df = df[df[era_assignment[era.get()]] == True]
+    
+    elif rating.get() != "Any":
+        df = df[df[rating.get()] == True]
 
+    elif runtime.get() != "Any":
+        df = df[df[runtime.get()] == True]
+    
+    elif lang.get() != "Any":
+        df['contains_lang'] = df['spoken_languages'].str.contains(lang.get(), case=False, na=False)
+        df = df[df['contains_lang'] == True]
+        print(df['title'])
+
+    if df.empty == False:
+        suggestion = df.sample()
+
+        print("* " * 50)
+        # print(suggestion['release_date'])
+        print("* Title: " + suggestion['title'].iloc[0] + " " * (100 - len(suggestion['title'].iloc[0]) - len("* Title: ") - 2) + "*")
+        print("* Genre(s): " + suggestion['genres'].iloc[0] + " " * (100 - len(suggestion['genres'].iloc[0]) - len("* Genre(s): ") - 2) + "*")
+        print("* Language: " + suggestion['spoken_languages'].iloc[0] + " " * (100 - len(suggestion['spoken_languages'].iloc[0]) - len("* Language: ") - 2) + "*")
+        
         wrapper = textwrap.TextWrapper(width=60)
+        print("* Summary: ", end="")
         text = wrapper.wrap(text=suggestion['overview'].iloc[0])
         for line in text:
             if text[0] != line:
-                print("* " + line + (" " * (80 - len(line) - 4)) + "*")
+                print("* " + line + (" " * (100 - len(line) - 4)) + "*")
             else:
-                print(line + (" " * (80 - len(line) - len("* Summary: ") - 2) + "*"))
-        print("* " * 40)
+                print(line + (" " * (100 - len(line) - len("* Summary: ") - 2) + "*"))
+        print("* " * 50)
+    
+    else:
+        print(f"There have been no movies released on {matching[1:3]}/{matching[4:]} that match your search.")
 
 
 window.grid_rowconfigure(0, weight=1)
@@ -72,7 +131,7 @@ lang_label.grid(row=5, column=0, sticky="nsew")
 
 genre_choices = ["Any", "Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary", 
      "Drama", "Family", "Fantasy", "History", "Horror", "Music", "Mystery",
-     "Science Fiction", "Thriller", "TV Movie", "War", "Western"]
+     "Romance", "Science Fiction", "Thriller", "TV Movie", "War", "Western"]
 
 genre = tk.StringVar()
 genre.set(genre_choices[0])
@@ -83,8 +142,8 @@ genres.config(width=20)
 genres.grid(row=1, column=1, sticky="nsew")
 # window.grid_columnconfigure(1, weight=1)
 
-era_choices = ["Any", "Silent Age (1911-1927)", "Pre-Code Era (1927-1933)", "Golden Age (1933-1965)", 
-        "New Hollywood (1965-1983)", "Blockbuster Age (1983-present)"]
+era_choices = ["Any", "Silent Age (1911-1926)", "Pre-Code Era (1927-1933)", "Golden Age (1934-1965)", 
+        "New Hollywood (1966-1983)", "Blockbuster Age (1984-present)"]
 
 era = tk.StringVar()
 era.set(era_choices[0])
@@ -96,7 +155,7 @@ eras.grid(row=2, column=1, sticky="nsew")
 
 
 
-rating_choices = ["Any", "Acclaim (8.0 - 10.0)", "Positive (6.0-7.9)", "Mixed (4.0-5.9)", "Negative (2.0-3.9)", "Terrible (0.0-1.9)"]
+rating_choices = ["Any", "Acclaim (8.0 - 10.0)", "Positive (6.0-8.0)", "Mixed (4.0-6.0)", "Negative (2.0-4.0)", "Terrible (0.0-2.0)"]
 
 rating = tk.StringVar()
 rating.set(rating_choices[0])
@@ -107,7 +166,7 @@ ratings.grid(row=3, column=1, sticky="nsew")
 
 
 
-runtime_choices = ["Any", "An Hour and a Half (or less)", "Two Hours (ish)", "Three Hours and Beyond"]
+runtime_choices = ["Any", "Short Film", "An Hour and a Half", "Two Hours (ish)", "Three Hours (ish) and Beyond"]
 
 runtime = tk.StringVar()
 runtime.set(runtime_choices[0])
@@ -118,10 +177,7 @@ runtimes.grid(row=4, column=1, sticky="nsew")
 
 
 
-lang_choices = ["Any", "Czech", "Danish", "Dutch",  "English", "Finnish", "French", "German", 
-                     "Hebrew", "Hindi", "Italian", "Japanese", "Korean",
-                    "Mandarin Chinese", "Norwegian", "Polish", "Portuguese", "Russian", 
-                     "Spanish", "Swedish", "Thai", "Turkish", ]
+
 
 lang = tk.StringVar()
 lang.set(lang_choices[0])
