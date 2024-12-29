@@ -14,16 +14,16 @@ I wanted to design a sleek, simplistic yet stylish application that would allow 
 ## Development
 Since I was envisioning an app with myself in mind as the ideal consumer, there were a few important things that I knew I had to take into account:
 
-1. Avoid repetition
+1. **Avoid repetition**
 
 This is the big one for me when it comes to recommendation systems. I can't stand it when I find a good service that is consistently able to give me options that fit my preferences, but then after a while it starts regurgitating the same recommendations. If I already saw the movie recently, I don't necessarily want to rewatch it just yet, I want to find something new! My solution for this problem is to use the date of a particular query as a "seed value" of sorts. The application notes the day on which the user is accessing the application, and only returns films that were also released on that given day. This ensures that if someone looks for a recommendation one week, they won't accidentally get that same film recommended again in a few days. This touch also creates a connection to each of the films, giving the user a throughline to pull from that will make them more likely to actually choose the movie that is recommended to them.
 
-2. Ensure that recommendations contain just the right amount of information
+2. **Ensure that recommendations contain just the right amount of information**
 
 The question of what metadata to include in a recommendation is a heavy one. For me, I like mostly the barebones. Film title, spoken languages, genre, and a brief summary generally is good enough. The summary specifically is key, as without it, it can be hard to really get the feel of a film. I might make more additions to the recommendations later on, but for now I feel that this is enough for a user to get a sense of whether or not a movie is right for them.
 
 
-3. Encourage engagement with obscure or unheard of films
+3. **Encourage engagement with obscure or unheard of films**
 
 The other issue that tends to come up when you rely on streaming services or Google searches to recommend you movies is that the recommendation is usually at least in part based on how popular certain films are. Although this leads to an increased chance of satisfaction with a recommendation, this can also in turn limit people from discovering hidden gems or more obscure outings. My application generates recommendations purely based on the metrics laid out above, meaning that the popularity of a film has no impact on the likelihood of it being recommended.
 
@@ -38,14 +38,18 @@ For the filters themselves (which are optional), these are currently the options
 ### Genre
 Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy, History, Horror, Music, Mystery, Romance, Science Fiction, Thriller, TV Movie, War, Western
 
+
 ### Era
 Silent Age (1911-1926), Pre-Code Era (1927-1933), Golden Age (1934-1965), New Hollywood (1966-1983), Blockbuster Age (1984-present)
+
 
 ### Rating
 Acclaim (8.0 - 10.0), Positive (6.0-8.0), Mixed (4.0-6.0), Negative (2.0-4.0), Terrible (0.0-2.0)
 
+
 ### Runtime
 Short Film, An Hour and a Half, Two Hours (ish), Three Hours (ish) and Beyond
+
 
 ### Language -- listed in English alphabetical order
 Bahasa melayu, বাংলা, 广州话 / 廣州話, Český, Dansk, Nederlands,  English, Finnish, Français, Deutsch, עִבְרִית, हिन्दी, Italiano, 日本語, 한국어/조선말, 普通话, Norsk, Polski, Português, Pусский, 
