@@ -1,6 +1,6 @@
 # [Re]Release
 
-Last updated: 12.29.2024
+Last updated: 12.30.2024
 
 ## Introduction
 It's a problem that we've all experienced many times before... you want to watch a movie, maybe you have a vague sense that you want it to be a comedy, plus you've been feeling a bit nostalgic recently so you're feeling an early 2000s romp as well, and so you hop on Netflix, or Disney+, or some other preferred streaming platform, and do a quick search to find something that fits that bill and BAMM! A thousand movies come at you, some of which fit your preferred requirements, but many of which don't. And so now, before you can even really wittle the choices down to those that you're actually interested in, you need to make your way through a bunch of random movies. The choices pile up until you decide to inevitably just rewatch New Girl for the millionth time (not speaking from personal experience or anything).
@@ -56,4 +56,4 @@ Bahasa melayu, বাংলা, 广州话 / 廣州話, Český, Dansk, Nederland
 Español, svenska, ภาษาไทย, Türkçe
 
 ## Ongoing Work
-At this point, the back-end is largely set in stone, and it now becomes a question of tuning the UI to best suit my purposes. `tkinter` is slightly limited in this respect, but I still hope to make the user experience as smooth as possible. Additionally, I hope to make the application workable in whatever time zone the user happens to be in, not just EST, and expand the filter system to enable multi-select.
+At this point, the back-end is largely set in stone, and it now becomes a question of tuning the UI to best suit my purposes. `tkinter` is slightly limited in this respect, but I still hope to make the user experience as smooth as possible and expand the filter system to enable multi-select.
