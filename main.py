@@ -25,22 +25,21 @@ RATING_CHOICES = ["Any", "Acclaim (8.0 - 10.0)", "Positive (6.0-8.0)", "Mixed (4
 
 RUNTIME_CHOICES = ["Any", "Short Film", "An Hour and a Half", "Two Hours (ish)", "Three Hours (ish) and Beyond"]
 
-# Creates a tk instance and configures it
-window = tk.Tk()
-window.title("[Re]Release")
-window.geometry("500x440")
-window.configure()
+def read_into_df(file : str, 
+                 matching : str) -> pd.DataFrame:
+    '''
+    Description
+    -----------
+    Returns a DataFrame that has the movie data necessary for recommendations
 
-frame = ttk.Frame(window)
-frame.grid(row=0, column=0, columnspan=2, sticky="nsew", padx=20, pady=20)
-
-title = tk.Label(frame, text="[Re]Release", font=("Arial", 25))
-title.grid(row=0, column=0, columnspan=2, sticky="nsew", pady=20)
-
-# Saves the date of the query
-matching = str(datetime.now())[4:10]
-
-def read_into_df(file, matching):
+    Parameters
+    ----------
+    file : str
+        The path to a file that stores movie meta data
+    matching : str
+        The date for which to find movies released on
+    
+    '''
 
     # Reads the data from Hugging Face -- 10k Movie Dataset from TMDb
     df = pd.read_csv(file)
@@ -87,7 +86,38 @@ def read_into_df(file, matching):
 
     return df
 
-def find_movies(df : pd.DataFrame, matching, genre : tk.StringVar, era : tk.StringVar, rating : tk.StringVar, runtime : tk.StringVar, lang : tk.StringVar):
+def find_movies(df : pd.DataFrame, 
+                matching : str, 
+                genre : tk.StringVar, 
+                era : tk.StringVar, 
+                rating : tk.StringVar, 
+                runtime : tk.StringVar, 
+                lang : tk.StringVar):
+    
+    '''
+    Description
+    -----------
+    Prints movie recommendations based on the criteria laid out by the user
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The dataframe that stores the necessary metadata to make recommendations
+    matching : str
+        The date for which to find movies released on
+    genre : tk.StringVar
+        The genre the user wants recommendations from
+    era : tk.StringVar
+        The era the user wants recommendations from
+    rating : tk.StringVar
+        The quality of film that the user wants
+    runtime : tk.StringVar
+        The movie runtime the user wants
+    lang : tk.StringVar
+        The language the user wants the movie to be spoken in
+    
+    '''
+
     # Filters based on genre selection
     if genre.get() != "Any":
         df['contains_genre'] = df['genres'].str.contains(genre.get(), case=False, na=False)
@@ -133,8 +163,34 @@ def find_movies(df : pd.DataFrame, matching, genre : tk.StringVar, era : tk.Stri
     else:
         print(f"There have been no movies released on {matching[1:3]}/{matching[4:]} that match your search.")
 
+def make_option_menu(parent : ttk.Frame, 
+                     dropdown : list[str], 
+                     text : str, 
+                     row : int,
+                     column : int, 
+                     sticky : str):
+    '''
+    Description
+    -----------
+    Makes option menus for users to select filters from
 
-def make_option_menu(parent, dropdown, text, row, column, sticky):
+    Parameters
+    ----------
+    parent : ttk.Frame
+        The frame the label + option menu should be put into
+    dropdown : list[str]
+        The options the users will choose from
+    text : str
+        The name of the option menu label
+    row : int
+        The grid row to put the label and option menu
+    column : int
+        The grid column to put the label and option menu
+    sticky : str
+        The justification of the text
+    
+    '''
+
     label = tk.Label(parent, text=text)
     label.grid(row=row, column=column, sticky=sticky)
     var = tk.StringVar()
@@ -143,6 +199,21 @@ def make_option_menu(parent, dropdown, text, row, column, sticky):
     choices.config(width=20)
     choices.grid(row=row, column=column + 1, stick=sticky)
     return var
+
+# Creates a tk instance and configures it
+window = tk.Tk()
+window.title("[Re]Release")
+window.geometry("500x440")
+window.configure()
+
+frame = ttk.Frame(window)
+frame.grid(row=0, column=0, columnspan=2, sticky="nsew", padx=20, pady=20)
+
+title = tk.Label(frame, text="[Re]Release", font=("Arial", 25))
+title.grid(row=0, column=0, columnspan=2, sticky="nsew", pady=20)
+
+# Saves the date of the query
+matching = str(datetime.now())[4:10]
 
 df = read_into_df(FILE, matching)
 
