@@ -1,0 +1,7 @@
+Things for profile:
+
+Name
+Streaming services you own
+Location (able to turn on and off)
+Locale
+Language
